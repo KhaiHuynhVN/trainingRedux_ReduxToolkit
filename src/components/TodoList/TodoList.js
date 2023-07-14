@@ -5,6 +5,7 @@ import { useRef } from 'react';
 
 import { Todo } from '../Todo';
 import todoListSlice from './todoListSlice';
+import { STORAGE } from '../../vendors';
 import {
    inputValueSelector,
    typeAddTodoSelector,
@@ -21,17 +22,25 @@ export default function TodoList() {
    const inputRef = useRef();
 
    const handleAddTodo = () => {
-      inputValue.trim() &&
-         dispatch(
-            todoListSlice.actions.setAddTodo({
-               id: uuidV4(),
-               name: inputValue,
-               completed: false,
-               type: typeAddTodo,
-            }),
-         );
+      if (!inputValue.trim()) return;
+      const todoData = {
+         id: uuidV4(),
+         name: inputValue,
+         completed: false,
+         type: typeAddTodo,
+      };
+      dispatch(todoListSlice.actions.setAddTodo(todoData));
 
       dispatch(todoListSlice.actions.setAddTodoInputValue(''));
+
+      const todoListStorage = STORAGE('todoList');
+      if (todoListStorage.get('todoList')) {
+         const remainingData = [...todoListStorage.get('todoList'), todoData];
+         todoListStorage.set('todoList', remainingData);
+      } else {
+         todoListStorage.set('todoList', [todoData]);
+      }
+
       inputRef.current.focus();
    };
 
@@ -44,7 +53,7 @@ export default function TodoList() {
    };
 
    return (
-      <Row style={{ height: 'calc(100% - 40px)' }}>
+      <Row style={{ height: 'calc(100% - 40px)', overflowY: 'hidden' }}>
          <Col span={24} style={{ height: 'calc(100% - 40px)', overflowY: 'auto' }}>
             {(remainingTodos.length &&
                remainingTodos.map((todo) => {

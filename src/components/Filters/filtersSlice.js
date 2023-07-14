@@ -29,6 +29,10 @@
 // };
 
 import { createSlice } from '@reduxjs/toolkit';
+import { STORAGE } from '../../vendors';
+
+const filterStorage = STORAGE('filters');
+const filters = filterStorage.get('filters');
 
 const filtersSlice = createSlice({
    name: 'filter',
@@ -36,16 +40,20 @@ const filtersSlice = createSlice({
       searchValue: '',
       status: 'All',
       type: [],
+      ...filters,
    },
    reducers: {
       setSearchValue(state, action) {
          state.searchValue = action.payload;
+         filterStorage.set('filters', state);
       },
       setStatus(state, action) {
          state.status = action.payload;
+         filterStorage.set('filters', state);
       },
       setType(state, action) {
-         state.type = action.payload;
+         state.type = [...action.payload];
+         filterStorage.set('filters', state);
       },
    },
 });

@@ -1,0 +1,19 @@
+// @tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+   margin: 0;
+   padding: 0;
+   box-sizing: border-box;
+   text-rendering: optimizeSpeed;
+}
+
+.delete-btn {
+   &:hover {
+      background: #ff7070 !important;
+   }
+   &:active {
+      background: #d00000 !important;
+   }
+}

@@ -54,14 +54,15 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
+import { STORAGE } from '../../vendors';
+
+const todoListStorage = STORAGE('todoList');
+const todoList = todoListStorage.get('todoList');
+
 const todoListSlice = createSlice({
    name: 'todoList',
    initialState: {
-      todos: [
-         { id: 1, name: 'Học Front-end', completed: true, type: 'High' },
-         { id: 2, name: 'Học Back-end', completed: false, type: 'Medium' },
-         { id: 3, name: 'Học Redux', completed: false, type: 'Low' },
-      ],
+      todos: todoList ? [...todoList] : [],
       dataAddTodo: {
          inputValue: '',
          type: 'High',
@@ -71,6 +72,8 @@ const todoListSlice = createSlice({
       setCompleted(state, action) {
          const result = state.todos.find((todo) => todo.id === action.payload.dataID);
          result.completed = action.payload.checked;
+
+         todoListStorage.set('todoList', state.todos);
       },
       setAddTodoInputValue(state, action) {
          state.dataAddTodo.inputValue = action.payload;
@@ -80,6 +83,10 @@ const todoListSlice = createSlice({
       },
       setAddTodo(state, action) {
          state.todos.push(action.payload);
+      },
+      setDeleteCompletedTodos(state, action) {
+         state.todos = [...action.payload];
+         todoListStorage.set('todoList', [...action.payload]);
       },
    },
 });

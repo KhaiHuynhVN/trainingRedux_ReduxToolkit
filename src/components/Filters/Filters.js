@@ -1,8 +1,14 @@
-import { Col, Row, Input, Typography, Radio, Select, Tag } from 'antd';
+import { Col, Row, Input, Typography, Radio, Select, Tag, Button } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 
-import filtersSlice from './filtersSlice';
-import { searchValueSelector, statusSelector, typeSelector } from '../../redux/selectors';
+import { todoListSlice } from '../TodoList';
+import { filtersSlice } from '../Filters';
+import {
+   searchValueSelector,
+   statusSelector,
+   todosSelector,
+   typeSelector,
+} from '../../redux/selectors';
 
 const { Search } = Input;
 
@@ -12,6 +18,7 @@ export default function Filters() {
    const searchValue = useSelector(searchValueSelector);
    const status = useSelector(statusSelector);
    const type = useSelector(typeSelector);
+   const todos = useSelector(todosSelector);
 
    const handleChangeSearchValue = (e) => {
       dispatch(filtersSlice.actions.setSearchValue(e.target.value));
@@ -23,6 +30,11 @@ export default function Filters() {
 
    const handleChangeStatus = (e) => {
       dispatch(filtersSlice.actions.setStatus(e.target.value));
+   };
+
+   const handleDeleteCompletedTodo = () => {
+      const remainingTodos = todos.filter((todo) => todo.completed === false);
+      dispatch(todoListSlice.actions.setDeleteCompletedTodos(remainingTodos));
    };
 
    return (
@@ -41,11 +53,23 @@ export default function Filters() {
             <Typography.Paragraph style={{ fontWeight: 'bold', marginBottom: 3, marginTop: 10 }}>
                Filter By Status
             </Typography.Paragraph>
-            <Radio.Group value={status} onChange={handleChangeStatus}>
-               <Radio value="All">All</Radio>
-               <Radio value={true}>Completed</Radio>
-               <Radio value={false}>To do</Radio>
-            </Radio.Group>
+            <div className="flex items-center" style={{ height: '32px' }}>
+               <Radio.Group value={status} onChange={handleChangeStatus}>
+                  <Radio value="All">All</Radio>
+                  <Radio value={true}>Completed</Radio>
+                  <Radio value={false}>To do</Radio>
+               </Radio.Group>
+               {status === true && (
+                  <Button
+                     className="delete-btn"
+                     type="primary"
+                     style={{ background: '#ff4646' }}
+                     onClick={handleDeleteCompletedTodo}
+                  >
+                     Delete
+                  </Button>
+               )}
+            </div>
          </Col>
          <Col sm={24}>
             <Typography.Paragraph style={{ fontWeight: 'bold', marginBottom: 3, marginTop: 10 }}>
