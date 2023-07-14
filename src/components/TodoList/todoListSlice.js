@@ -86,7 +86,7 @@ const todoListSlice = createSlice({
       },
       setDeleteCompletedTodos(state, action) {
          state.todos = [...action.payload];
-         todoListStorage.set('todoList', [...action.payload]);
+         todoListStorage.set('todoList', state.todos);
       },
    },
 });
